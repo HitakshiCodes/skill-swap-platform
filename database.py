@@ -1,8 +1,22 @@
-# database.py
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-Base = declarative_base()
-engine = create_engine('sqlite:///skill_swap.db')  
-SessionLocal = sessionmaker(bind=engine)
+import sqlite3
+
+def init_db():
+    with sqlite3.connect("skill_swap.db") as conn:
+        c = conn.cursor()
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT
+            )
+        """)
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS skills (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                skill TEXT,
+                want TEXT
+            )
+        """)
+        conn.commit()
