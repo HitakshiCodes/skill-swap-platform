@@ -1,12 +1,12 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
-from database import Base  # <-- Import Base from your database setup
+from sqlalchemy import Column, Integer, String, Boolean
+from app import db
 
-class User(Base):
-    __tablename__ = 'users'
-
+class User(db.Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    email = Column(String, unique=True)
-    password = Column(String)
-    skills_offered = relationship("Skill", back_populates="user")
+    name = Column(String(100))
+    email = Column(String(100), unique=True)
+    password = Column(String(100))
+    location = Column(String(100))
+    availability = Column(String(100))
+    is_public = Column(Boolean, default=True)
+
