@@ -6,7 +6,26 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
   <style>
-    body {
+    body { <!-- keep previous head and style -->
+<div id="skill-list">
+  {% for s in skills %}
+  <div class="card">
+    <h3>{{ s.name }}</h3>
+    <p><strong>Can Teach:</strong> {{ s.skill }}</p>
+    <p><strong>Wants to Learn:</strong> {{ s.want }}</p>
+    <p><strong>Contact:</strong> {{ s.contact }}</p>
+    <p><strong>Mode:</strong> {{ s.mode }}</p>
+    <p><strong>Location:</strong> {{ s.location }}</p>
+    
+    {% if s.location %}
+      <a target="_blank" href="https://www.google.com/maps/search/{{ s.location | urlencode }}">
+        📍 View on Map
+      </a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
       font-family: 'Montserrat', sans-serif;
     }
 

@@ -11,7 +11,36 @@
   <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body><h2>Add Your Skill Info</h2>
+<form action="/add-skill" method="POST">
+    
+  <input type="text" name="skill" placeholder="Enter your skill">
+  <button type="submit">Submit</button>
+
+   
+  <label>Name:</label><br>
+  <input type="text" name="name" required><br><br>
+
+  <label>Contact:</label><br>
+  <input type="text" name="contact"><br><br>
+
+  <label>Skills You Offer:</label><br>
+  <input type="text" name="offer"><br><br>
+
+  <label>Skills You Want:</label><br>
+  <input type="text" name="want"><br><br>
+
+  <label>Availability:</label><br>
+  <input type="text" name="availability"><br><br>
+
+ 
+
+
+  <label><input type="checkbox" name="is_public"> Make profile public</label><br><br>
+
+  <button type="submit">Submit</button>
+</form>
+
   <div class="hero">
     <div class="overlay">
       <div class="content">
@@ -26,6 +55,7 @@
   </div>
 </body>
 </html>
+
 
 
 

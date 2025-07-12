@@ -8,20 +8,23 @@ app.secret_key = 'your-secret-key'
 init_db()
 
 # 🔐 Register route
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        with sqlite3.connect("skill_swap.db") as conn:
-            try:
-                conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-                conn.commit()
-                flash('Registration successful. Please log in.')
-                return redirect('/login')
-            except sqlite3.IntegrityError:
-                flash('Username already exists.')
-    return render_template('register.html')
+@app.route("/add", methods=["POST"])
+def add_skill():
+    name = request.form["name"]
+    contact = request.form["contact"]
+    offer = request.form["offer"]
+    want = request.form["want"]
+    availability = request.form["availability"]
+    is_public = 1 if "is_public" in request.form else 0
+
+    with sqlite3.connect("skill_swap.db") as conn:
+        conn.execute("""
+            INSERT INTO skills (name, contact, offer, want, availability, is_public)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (name, contact, offer, want, availability, is_public))
+
+    return redirect(url_for("index"))
+
 
 # 🔐 Login route
 @app.route('/login', methods=['GET', 'POST'])
@@ -51,18 +54,27 @@ def home():
 
 # ➕ Add Skill
 @app.route('/add-skill', methods=['GET', 'POST'])
-def add_skill():
+def submit_skill():   # <-- renamed from add_skill
+    # your logic here
+
     if 'user' not in session:
         return redirect('/login')
     if request.method == 'POST':
         name = request.form['name']
         skill = request.form['skill']
         want = request.form['want']
+        contact = request.form['contact']
+        location = request.form['location']
+        mode = request.form['mode']
         with sqlite3.connect("skill_swap.db") as conn:
-            conn.execute("INSERT INTO skills (name, skill, want) VALUES (?, ?, ?)", (name, skill, want))
+            conn.execute("""
+                INSERT INTO skills (name, skill, want, contact, location, mode)
+                VALUES (?, ?, ?, ?, ?, ?)""",
+                (name, skill, want, contact, location, mode))
             conn.commit()
         return redirect('/dashboard')
     return render_template('add-skill.html')
+
 
 # 📋 Dashboard
 @app.route('/dashboard')

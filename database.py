@@ -3,20 +3,16 @@ import sqlite3
 
 def init_db():
     with sqlite3.connect("skill_swap.db") as conn:
-        c = conn.cursor()
-        c.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE,
-                password TEXT
-            )
-        """)
-        c.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS skills (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                skill TEXT,
-                want TEXT
+                name TEXT NOT NULL,
+                contact TEXT,
+                offer TEXT,
+                want TEXT,
+                availability TEXT,
+                is_public INTEGER
             )
         """)
-        conn.commit()
+
+
