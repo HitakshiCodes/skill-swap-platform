@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ skill.name }}'s Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .profile-card {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .profile-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid #4CAF50;
+        }
+        .profile-card h2 {
+            margin-bottom: 10px;
+        }
+        .profile-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+       {% if skill.profile_pic %}
+    <img src="{{ url_for('static', filename='uploads/' ~ skill.profile_pic) }}" alt="Profile Picture" style="width:150px; height:150px; border-radius: 50%;">
+{% else %}
+    <p>No profile picture uploaded.</p>
+{% endif %}
+
+        <h2>{{ skill.name }}</h2>
+        <p><strong>Teaches:</strong> {{ skill.skill }}</p>
+        <p><strong>Wants to Learn:</strong> {{ skill.want }}</p>
+        <p><strong>Contact:</strong> {{ skill.contact }}</p>
+        <p><strong>Location:</strong> {{ skill.location }}</p>
+        <p><strong>Mode:</strong> {{ skill.mode }}</p>
+        <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+    </div>
+</body>
+</html>

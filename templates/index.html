@@ -11,35 +11,9 @@
   <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body><h2>Add Your Skill Info</h2>
-<form action="/add-skill" method="POST">
-    
-  <input type="text" name="skill" placeholder="Enter your skill">
-  <button type="submit">Submit</button>
-
-   
-  <label>Name:</label><br>
-  <input type="text" name="name" required><br><br>
-
-  <label>Contact:</label><br>
-  <input type="text" name="contact"><br><br>
-
-  <label>Skills You Offer:</label><br>
-  <input type="text" name="offer"><br><br>
-
-  <label>Skills You Want:</label><br>
-  <input type="text" name="want"><br><br>
-
-  <label>Availability:</label><br>
-  <input type="text" name="availability"><br><br>
-
- 
+<body>
 
 
-  <label><input type="checkbox" name="is_public"> Make profile public</label><br><br>
-
-  <button type="submit">Submit</button>
-</form>
 
   <div class="hero">
     <div class="overlay">
@@ -47,7 +21,11 @@
         <h1><i class="fas fa-handshake"></i> Welcome to Skill Swap!</h1>
         <p>Share your skills, learn something new, and connect with others.</p>
         <div class="buttons">
-          <a href="/add-skill" class="btn"><i class="fas fa-plus-circle"></i> Add Your Skills</a>
+          <a href="{{ url_for('login') }}" class="btn btn-success btn-lg">Add Your Skill</a>
+
+
+
+
           <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-search"></i> Browse Skills</a>
         </div>
       </div>

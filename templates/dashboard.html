@@ -6,24 +6,21 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
   <style>
-    body { <!-- keep previous head and style -->
+    body { 
 <div id="skill-list">
-  {% for s in skills %}
+  <h2>Available Skills</h2>
+
+{% for skill in skills %}
   <div class="card">
-    <h3>{{ s.name }}</h3>
-    <p><strong>Can Teach:</strong> {{ s.skill }}</p>
-    <p><strong>Wants to Learn:</strong> {{ s.want }}</p>
-    <p><strong>Contact:</strong> {{ s.contact }}</p>
-    <p><strong>Mode:</strong> {{ s.mode }}</p>
-    <p><strong>Location:</strong> {{ s.location }}</p>
-    
-    {% if s.location %}
-      <a target="_blank" href="https://www.google.com/maps/search/{{ s.location | urlencode }}">
-        📍 View on Map
-      </a>
-    {% endif %}
+    <h3>{{ skill.name }}</h3>
+    <p><strong>Can Teach:</strong> {{ skill.skill }}</p>
+    <p><strong>Wants to Learn:</strong> {{ skill.want }}</p>
+    <p><strong>Contact:</strong> {{ skill.contact }}</p>
+    <p><strong>Location:</strong> {{ skill.location }}</p>
+    <p><strong>Mode:</strong> {{ skill.mode }}</p>
+    <a href="/user/{{ skill.id }}">Connect</a>
   </div>
-  {% endfor %}
+{% endfor %}
 </div>
 
       font-family: 'Montserrat', sans-serif;
@@ -98,15 +95,18 @@
     <input type="text" class="search-box" id="search" placeholder="Search by skill, name, or interest...">
 
     <div id="skill-list">
-      {% for s in skills %}
-      <div class="card" onclick="alert('Feature coming soon: connect with {{ s.name }}!')">
-        <h3>{{ s.name }}</h3>
-        <p><strong>Can Teach:</strong> {{ s.skill }}</p>
-        <p><strong>Wants to Learn:</strong> {{ s.want }}</p>
-        <p><strong>Entry #{{ loop.index }}</strong></p>
-      </div>
-      {% endfor %}
+    {% for skill in skills %}
+  <div class="card">
+    <h3>{{ skill.name }}</h3>
+    <p><strong>Can Teach:</strong> {{ skill.skill }}</p>
+    <p><strong>Wants to Learn:</strong> {{ skill.want }}</p>
+    <a href="{{ url_for('user_profile', user_id=skill.id) }}">View Profile</a>
+  </div>
+{% endfor %}
+
+
     </div>
+
 
     <a href="/" class="btn">← Back to Home</a>
   </div>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 from database import init_db
 
@@ -7,58 +7,54 @@ app.secret_key = 'your-secret-key'
 
 init_db()
 
-# 🔐 Register route
-@app.route("/add", methods=["POST"])
-def add_skill():
-    name = request.form["name"]
-    contact = request.form["contact"]
-    offer = request.form["offer"]
-    want = request.form["want"]
-    availability = request.form["availability"]
-    is_public = 1 if "is_public" in request.form else 0
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-    with sqlite3.connect("skill_swap.db") as conn:
-        conn.execute("""
-            INSERT INTO skills (name, contact, offer, want, availability, is_public)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (name, contact, offer, want, availability, is_public))
-
-    return redirect(url_for("index"))
-
-
-# 🔐 Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         with sqlite3.connect("skill_swap.db") as conn:
-            user = conn.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password)).fetchone()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+            user = cursor.fetchone()
             if user:
                 session['user'] = username
-                return redirect('/')
+                return redirect('/dashboard')
             else:
-                flash('Invalid credentials.')
+                flash("Invalid username or password.")
     return render_template('login.html')
 
-# 🔓 Logout
-@app.route('/logout')
-def logout():
-    session.pop('user', None)
-    return redirect('/login')
+import os
+from werkzeug.utils import secure_filename
 
-# 🏠 Home
-@app.route('/')
-def home():
-    return render_template('index.html')
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# ➕ Add Skill
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        profile_pic = request.files['profile_pic']
+        filename = secure_filename(profile_pic.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        profile_pic.save(filepath)
+
+        with sqlite3.connect("skill_swap.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO users (username, password, profile_pic) VALUES (?, ?, ?)",
+                           (username, password, filename))
+            conn.commit()
+        return redirect(url_for('add_skill'))
+    return render_template('register.html')
+
+
 @app.route('/add-skill', methods=['GET', 'POST'])
-def submit_skill():   # <-- renamed from add_skill
-    # your logic here
-
-    if 'user' not in session:
-        return redirect('/login')
+def add_skill():
     if request.method == 'POST':
         name = request.form['name']
         skill = request.form['skill']
@@ -66,27 +62,61 @@ def submit_skill():   # <-- renamed from add_skill
         contact = request.form['contact']
         location = request.form['location']
         mode = request.form['mode']
+
         with sqlite3.connect("skill_swap.db") as conn:
-            conn.execute("""
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS skills (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    skill TEXT,
+                    want TEXT,
+                    contact TEXT,
+                    location TEXT,
+                    mode TEXT
+                )
+            ''')
+            cursor.execute('''
                 INSERT INTO skills (name, skill, want, contact, location, mode)
-                VALUES (?, ?, ?, ?, ?, ?)""",
-                (name, skill, want, contact, location, mode))
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (name, skill, want, contact, location, mode))
             conn.commit()
-        return redirect('/dashboard')
+
+        return redirect(url_for('dashboard'))
+
     return render_template('add-skill.html')
 
-
-# 📋 Dashboard
 @app.route('/dashboard')
 def dashboard():
+    if 'user' not in session:
+         return redirect('/login')
     with sqlite3.connect("skill_swap.db") as conn:
-        conn.row_factory = sqlite3.Row  # 👈 this line makes it return dict-like rows
+        conn.row_factory = sqlite3.Row
         skills = conn.execute("SELECT * FROM skills").fetchall()
     return render_template('dashboard.html', skills=skills)
 
+@app.route('/user/<int:user_id>')
+def user_profile(user_id):
+    with sqlite3.connect("skill_swap.db") as conn:
+        conn.row_factory = sqlite3.Row
+        skill = conn.execute("SELECT * FROM skills WHERE id = ?", (user_id,)).fetchone()
+
+    if not skill:
+        return "User not found", 404
+
+    return render_template("profile.html", skill=skill)
+
+    if not skill:
+        return "User not found", 404
+    return render_template("profile.html", skill=skill)
+
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect('/login')
+
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-
+    app.debug = True
+    app.run(host='0.0.0.0', port=10000)
